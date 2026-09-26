@@ -1,0 +1,483 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>LTX — The world model</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+ --retake-ease:cubic-bezier(.22,1,.36,1);
+ --retake-slow-ease:cubic-bezier(.65,0,.35,1);
+ --glass-x:24%;--glass-y:8%;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;min-height:100%;background:#000;color:#fff;font-family:'Manrope',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+body{overflow-x:hidden}
+::selection{background:rgba(255,255,255,.2)}
+:focus-visible{outline:2px solid #fff;outline-offset:3px}
+a{color:inherit;text-decoration:none}
+button{font:inherit}
+.stage{position:relative;isolation:isolate;width:100%;height:100vh;height:100dvh;overflow:hidden;background:#000}
+.media{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;z-index:0;pointer-events:none;visibility:hidden}
+.media.active{visibility:visible}
+.hero{position:absolute;inset:0;z-index:10;pointer-events:none}
+header{
+ position:absolute;top:0;left:0;width:100%;z-index:30;
+ display:grid;grid-template-columns:auto 1fr auto;align-items:center;
+ padding:calc(58px + env(safe-area-inset-top)) 40px 40px;
+ text-shadow:0 1px 6px rgb(0 0 0/.18)
+}
+.brand{display:flex;align-items:center}
+.logo{height:24px;width:auto;display:block}
+.meta{display:flex;margin-left:clamp(48px,5vw,70px);gap:clamp(28px,3vw,44px);font-size:18px;line-height:1.2;letter-spacing:-.04em}
+.try{
+ width:152px;height:38px;border:1px solid rgb(255 255 255/.75);border-radius:999px;
+ display:flex;align-items:center;justify-content:center;background:transparent;font-size:18px;
+ transition:color 300ms,background 300ms,border-color 300ms
+}
+.try:hover,.try:focus-visible{background:#fff;color:#0b1a26;border-color:#fff}
+.hero h1{
+ position:absolute;top:35.9%;left:50%;transform:translateX(-50%);
+ width:min(901px,calc(100vw - 48px));font-size:clamp(62px,6.8vw,100px);
+ font-weight:500;line-height:.8;letter-spacing:-.04em;white-space:nowrap;
+ text-shadow:0 2px 12px rgb(0 0 0/.14);display:flex;justify-content:space-between;
+ transition:filter 900ms var(--retake-ease),transform 900ms var(--retake-ease)
+}
+.hero h1 span{opacity:1;filter:blur(0);transition:opacity 900ms var(--retake-ease),filter 900ms var(--retake-ease),transform 900ms var(--retake-ease)}
+.stage.title-hidden .hero h1 span{opacity:0;filter:blur(12px);transform:translateY(-10px)}
+.stage.title-hidden .hero h1 span:nth-child(2){transition-delay:90ms}
+.stage.title-hidden .hero h1 span:nth-child(3){transition-delay:180ms}
+.hero p{
+ position:absolute;top:calc(46.78% + 94px);left:50%;transform:translateX(-50%);
+ width:min(734px,calc(100vw - 48px));font-size:clamp(14px,1.25vw,18px);
+ font-weight:400;line-height:1.2;letter-spacing:-.04em;text-shadow:0 1px 8px rgb(0 0 0/.16)
+}
+.controller{
+ position:absolute;top:46.78%;left:50%;transform:translateX(-50%);
+ width:min(880px,calc(100vw - 48px));height:72px;z-index:20;
+ --cap-left:-5px;--cap-width:calc(20% + 5px)
+}
+.track,.capsule{position:absolute;border-radius:999px;overflow:hidden}
+.track{
+ top:4px;left:0;width:100%;height:64px;
+ background:rgb(24 55 82/.31);border:1px solid rgb(255 255 255/.2);
+ -webkit-backdrop-filter:blur(9px) saturate(126%) contrast(108%) brightness(103%);
+ backdrop-filter:blur(9px) saturate(126%) contrast(108%) brightness(103%);
+ box-shadow:0 14px 38px rgb(4 24 43/.16),0 2px 7px rgb(4 24 43/.1),
+ inset 1px 1px 0 rgb(255 255 255/.48),inset -1px -1px 0 rgb(21 49 73/.14),
+ inset 0 0 0 .5px rgb(255 255 255/.16);
+ transition:opacity 400ms linear 650ms,left 980ms var(--retake-slow-ease),width 980ms var(--retake-slow-ease)
+}
+.capsule{
+ top:-1px;left:var(--cap-left);width:var(--cap-width);height:72px;
+ background:rgb(246 251 255/.24);border:1px solid rgb(255 255 255/.28);
+ -webkit-backdrop-filter:blur(13px) saturate(128%) contrast(107%) brightness(105%);
+ backdrop-filter:blur(13px) saturate(128%) contrast(107%) brightness(105%);
+ box-shadow:0 11px 28px rgb(4 24 43/.17),0 2px 6px rgb(4 24 43/.1),
+ inset 1px 1px 0 rgb(255 255 255/.62),inset -1px -1px 0 rgb(20 49 73/.18),
+ inset 0 0 12px rgb(255 255 255/.055);
+ z-index:2;pointer-events:none;
+ transition:left 620ms var(--retake-ease),width 620ms var(--retake-ease),background 620ms var(--retake-ease),opacity 300ms
+}
+.glass:before,.glass:after{content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit}
+.glass:before{
+ background:radial-gradient(120% 150% at var(--glass-x) var(--glass-y),rgb(255 255 255/.25),rgb(255 255 255/0) 53%),
+ linear-gradient(115deg,rgb(255 255 255/.10),rgb(255 255 255/0) 42%)
+}
+.glass:after{
+ padding:1px;background:conic-gradient(from 225deg,#7fe3ff,rgb(255 255 255/.35),#fff,#ffd7e6,rgb(255 255 255/.35),#7fe3ff);
+ -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+ -webkit-mask-composite:xor;mask-composite:exclude;opacity:.27
+}
+.capsule:after{opacity:.30}
+.cells{position:absolute;inset:0;display:grid;grid-template-columns:repeat(5,1fr);align-items:center;z-index:3}
+.cell{
+ display:flex;align-items:center;justify-content:center;height:100%;padding:0 14px;
+ font-size:23px;font-weight:400;line-height:1.2;letter-spacing:-.04em;white-space:nowrap;
+ transition:opacity 420ms var(--retake-ease),filter 420ms var(--retake-ease),transform 980ms var(--retake-slow-ease);
+ position:relative;z-index:4
+}
+.cell.action{border:0;background:transparent;color:#fff;border-radius:999px;cursor:pointer}
+.cell.action:disabled{cursor:default}
+.controller.hovering .label{opacity:.5}
+.controller.collapsing .track,.controller.selected .track{opacity:0}
+.controller.collapsing .capsule,.controller.selected .capsule{left:calc(50% - 100px);width:200px}
+.controller.collapsing .cell:not(.label){opacity:0;filter:blur(10px);transform:scale(.94);pointer-events:none}
+.controller.selected .cell:not(.label){opacity:0;filter:blur(10px);transform:scale(.94);pointer-events:none}
+.controller.selected .label{opacity:1;pointer-events:none}
+.reset-label{
+ position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+ opacity:0;filter:blur(10px);pointer-events:none;text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px;
+ transition:opacity 520ms var(--retake-ease),filter 520ms var(--retake-ease);
+ z-index:8
+}
+.controller.selected .reset-label{opacity:1;filter:blur(0);pointer-events:auto}
+.controller.selected .label{opacity:0}
+.controller.collapsing .reset-label{opacity:0}
+.controller.collapsed .capsule{background:rgb(246 251 255/.14)}
+.controller.reopening .track{opacity:1;transition-delay:0ms}
+.controller.reopening .capsule{left:var(--cap-left);width:var(--cap-width)}
+.controller.reopening .cell.action{opacity:1;filter:blur(0);transform:scale(1);transition-delay:60ms}
+.controller.reopening .label{opacity:1}
+.status,.notice{
+ position:absolute;z-index:40;left:50%;transform:translateX(-50%);pointer-events:none;text-align:center
+}
+.status{bottom:18px;font-size:11px;opacity:.7}
+.notice{
+ bottom:48px;display:none;pointer-events:auto;padding:9px 14px;border-radius:999px;
+ background:rgb(0 0 0/.55);border:1px solid rgb(255 255 255/.35);font-size:13px
+}
+.notice.show{display:flex;gap:10px;align-items:center}
+.notice button{border:1px solid #fff;background:transparent;color:#fff;border-radius:999px;padding:5px 11px;cursor:pointer}
+.visually-hidden{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}
+
+@media(max-width:900px){
+ header{padding:calc(24px + env(safe-area-inset-top)) 24px 24px}
+ .meta{font-size:14px;gap:22px;margin-left:34px}
+ .try{width:116px;height:36px;font-size:14px}
+ .cell{font-size:clamp(17px,2.5vw,24px)}
+}
+@media(max-width:700px){
+ header{padding-left:18px;padding-right:18px}
+ .logo{height:21px}.meta{font-size:12px}.meta span:last-child{display:none}
+ .try{width:92px;height:34px;font-size:13px;position:relative}
+ .try:after{content:"";position:absolute;inset:-6px -10px}
+ .hero h1{
+  top:34%;width:calc(100vw - 40px);font-size:clamp(48px,14vw,64px);
+  line-height:.88;white-space:normal;display:block;text-align:center
+ }
+ .hero h1 span{display:inline}
+ .hero p{top:77%;width:calc(100vw - 44px);font-size:14px;text-align:center}
+ .controller{top:53%;width:calc(100vw - 40px);height:156px}
+ .track{top:0;height:156px;border-radius:28px}
+ .cells{grid-template-columns:1fr 1fr;grid-template-rows:48px 54px 54px}
+ .cell{font-size:17px;padding:0 8px}
+ .cell.label{grid-column:1/-1}
+ .cell.action:nth-child(3),.cell.action:nth-child(5){border-left:1px solid rgb(255 255 255/.12)}
+ .cell.action:nth-child(4),.cell.action:nth-child(5){border-top:1px solid rgb(255 255 255/.12)}
+ .capsule{opacity:0;pointer-events:none;top:4vh;top:4dvh;left:50%;width:196px;height:64px;transform:translate(-50%,-50%);background:rgb(246 251 255/.18)}
+ .controller.selected .capsule,.controller.collapsing .capsule{opacity:1;left:50%;width:196px;transform:translate(-50%,-50%)}
+ .controller.collapsing .track,.controller.selected .track{opacity:0}
+ .controller.collapsing .cell.action,.controller.selected .cell.action{opacity:0}
+ .controller.collapsing .reset-label,.controller.selected .reset-label{opacity:1}
+ .controller .reset-label{top:4vh;top:4dvh;height:64px;transform:translateY(-50%)}
+ .status{bottom:8px;font-size:10px}
+ .notice{bottom:30px}
+}
+@media(max-width:700px) and (max-height:700px){
+ .controller{top:50%}.hero p{top:calc(50% + 168px);width:calc(100vw - 32px);font-size:13px}
+}
+@media(max-height:520px) and (orientation:landscape){
+ .hero h1{top:20%;font-size:clamp(34px,8vh,56px)}
+ .controller{top:50%}.hero p{top:auto;bottom:8px;font-size:13px}
+}
+@media(max-width:700px) and (max-height:520px) and (orientation:landscape){
+ .hero h1{top:12%;font-size:clamp(28px,7vh,44px)}
+ .controller{top:46%;height:118px}.track{height:118px}
+ .cells{grid-template-rows:36px 41px 41px}.cell{font-size:15px}
+ .hero p{bottom:6px;top:auto;font-size:12px}
+}
+@media(prefers-reduced-motion:reduce){
+ .capsule,.track,.cell,.hero h1 span,.try,.reset-label{transition-duration:1ms!important;transition-delay:0!important}
+ .hero h1 span{filter:none!important}
+}
+</style>
+</head>
+<body>
+<main class="stage" id="stage">
+
+<!-- Eight persistent media layers -->
+<video id="v-base" class="media active" src="https://pub-86dc5b5484314368ac5436a674b0d919.r2.dev/designs/video-1.mp4" muted playsinline preload="auto" aria-hidden="true"></video>
+<video id="v-base-rev" class="media" src="https://pub-86dc5b5484314368ac5436a674b0d919.r2.dev/designs/video-1-reverse.mp4" muted playsinline preload="auto" aria-hidden="true"></video>
+<video id="v-scene" class="media" src="https://pub-86dc5b5484314368ac5436a674b0d919.r2.dev/designs/video-2.mp4" muted playsinline preload="auto" aria-hidden="true"></video>
+<video id="v-scene-rev" class="media" src="https://pub-86dc5b5484314368ac5436a674b0d919.r2.dev/designs/video-2-reverse.mp4" muted playsinline preload="auto" aria-hidden="true"></video>
+<video id="v-light" class="media" src="https://pub-86dc5b5484314368ac5436a674b0d919.r2.dev/designs/video-3.mp4" muted playsinline preload="auto" aria-hidden="true"></video>
+<video id="v-light-rev" class="media" src="https://pub-86dc5b5484314368ac5436a674b0d919.r2.dev/designs/video-3-reverse.mp4" muted playsinline preload="auto" aria-hidden="true"></video>
+<video id="v-color" class="media" src="https://pub-86dc5b5484314368ac5436a674b0d919.r2.dev/designs/video-4.mp4" muted playsinline preload="auto" aria-hidden="true"></video>
+<video id="v-color-rev" class="media" src="https://pub-86dc5b5484314368ac5436a674b0d919.r2.dev/designs/video-4-reverse.mp4" muted playsinline preload="auto" aria-hidden="true"></video>
+
+<div class="hero">
+  <h1 aria-label="The world model"><span>The</span><span>world</span><span>model</span></h1>
+  <p>LTX builds open world models that give you full control, from production-grade video to systems that understand and operate in the physical world.</p>
+</div>
+
+<div class="controller" id="controller" role="group" aria-label="Scene state controller">
+  <div class="track glass"></div>
+  <div class="capsule glass"></div>
+  <div class="reset-label" id="resetLabel" role="button" tabindex="-1" aria-label="Reset to base">Reset</div>
+  <div class="cells">
+    <div class="cell label">Select state →</div>
+    <button class="cell action" data-state="scene">Scene</button>
+    <button class="cell action" data-state="light">Lighting</button>
+    <button class="cell action" data-state="colorway">Clothing</button>
+    <button class="cell action" data-state="fullLook">Cast</button>
+  </div>
+</div>
+
+<header>
+  <div class="brand">
+    <a href="#" aria-label="LTX home">
+      <svg class="logo" viewBox="0 0 75 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path fill="#fff" d="M0 2h8v21h13v7H0z"/>
+        <path fill="#fff" d="M22 2h24v7h-8v21h-8V9h-8z"/>
+        <path fill="#fff" d="M49 2h9l4.5 7.7L67 2h8L67.5 15l7.5 15h-8l-4.5-8-4.5 8h-9l7.5-15z"/>
+      </svg>
+    </a>
+    <div class="meta"><span>LTX-2.5 is here</span><span>Smarter. Faster</span></div>
+  </div>
+  <a class="try" href="https://app.ltx.io/" target="_blank" rel="noopener noreferrer">Try now</a>
+</header>
+
+<div class="status" id="status" aria-live="polite"></div>
+<div class="notice" id="notice" role="alert">
+  <span id="noticeText">Transition failed.</span>
+  <button id="retry">Retry</button>
+</div>
+<div class="visually-hidden" id="live" aria-live="polite"></div>
+</main>
+
+<script>
+(function(){
+'use strict';
+
+var stage=document.getElementById('stage');
+var controller=document.getElementById('controller');
+var resetLabel=document.getElementById('resetLabel');
+var status=document.getElementById('status');
+var notice=document.getElementById('notice');
+var noticeText=document.getElementById('noticeText');
+var retry=document.getElementById('retry');
+var live=document.getElementById('live');
+var buttons=[].slice.call(document.querySelectorAll('.cell.action'));
+
+var clips={
+ base:document.getElementById('v-base'),
+ baseReverse:document.getElementById('v-base-rev'),
+ scene:document.getElementById('v-scene'),
+ sceneReverse:document.getElementById('v-scene-rev'),
+ light:document.getElementById('v-light'),
+ lightReverse:document.getElementById('v-light-rev'),
+ colorway:document.getElementById('v-color'),
+ colorwayReverse:document.getElementById('v-color-rev')
+};
+var pairs={
+ scene:['scene','sceneReverse'],
+ light:['light','lightReverse'],
+ colorway:['colorway','colorwayReverse'],
+ fullLook:['colorway','colorwayReverse']
+};
+var durations={scene:2.08,light:2.08,colorway:3.00,fullLook:3.00};
+var reverseDurations={scene:2.08,light:2.04,colorway:2.48,fullLook:2.48};
+var holds={forward:.08,reverse:.08,sceneReverse:.18};
+var state='base',locked=false,token=0,lastSelected=null,lastFocused=null;
+var ready={};
+
+function announce(s){status.textContent=s;live.textContent=s}
+function setActive(v){
+ Object.keys(clips).forEach(function(k){clips[k].classList.remove('active');clips[k].pause()});
+ v.classList.add('active');
+}
+function setButtonsDisabled(disabled){
+ buttons.forEach(function(b){b.disabled=disabled});
+}
+function setControllerIndex(index){
+ if(index===0){
+   controller.style.setProperty('--cap-left','-5px');
+   controller.style.setProperty('--cap-width','calc(20% + 5px)');
+ }else{
+   controller.style.setProperty('--cap-left',(index*20)+'%');
+   controller.style.setProperty('--cap-width',index===4?'calc(20% + 5px)':'20%');
+ }
+}
+function hoverCapsule(button){
+ if(locked||window.innerWidth<=700)return;
+ var idx=buttons.indexOf(button)+1;
+ setControllerIndex(idx);
+ controller.classList.add('hovering');
+}
+function restoreHover(){
+ if(locked||window.innerWidth<=700)return;
+ setControllerIndex(0);
+ controller.classList.remove('hovering');
+}
+buttons.forEach(function(b){
+ b.addEventListener('mouseenter',function(){hoverCapsule(b)});
+ b.addEventListener('focus',function(){hoverCapsule(b)});
+ b.addEventListener('mouseleave',restoreHover);
+ b.addEventListener('blur',function(){
+   var focused=document.activeElement;
+   if(!focused||!focused.classList.contains('action'))restoreHover();
+ });
+});
+controller.addEventListener('pointermove',function(e){
+ var r=controller.getBoundingClientRect();
+ controller.style.setProperty('--glass-x',((e.clientX-r.left)/r.width*100)+'%');
+ controller.style.setProperty('--glass-y',((e.clientY-r.top)/r.height*100)+'%');
+});
+controller.addEventListener('pointerleave',restoreHover);
+
+function showError(msg){
+ noticeText.textContent=msg||'Transition failed.';
+ notice.classList.add('show');
+ announce(msg||'Transition failed. Retry available.');
+ locked=false;setButtonsDisabled(false);
+}
+function clearError(){notice.classList.remove('show')}
+
+function seekZero(video){
+ return new Promise(function(resolve,reject){
+   var done=false,timer;
+   function finish(){if(done)return;done=true;clearTimeout(timer);video.removeEventListener('seeked',onSeek);resolve()}
+   function onSeek(){if(video.currentTime<=.001)finish();else finish()}
+   video.addEventListener('seeked',onSeek,{once:true});
+   timer=setTimeout(finish,3000);
+   try{video.currentTime=0}catch(e){reject(e)}
+ });
+}
+function firstFrame(video,timeout){
+ return new Promise(function(resolve,reject){
+   var done=false,start=performance.now(),raf,timer,frameId=null;
+   function cleanup(){clearTimeout(timer);cancelAnimationFrame(raf);if(frameId!==null&&video.cancelVideoFrameCallback)video.cancelVideoFrameCallback(frameId)}
+   function ok(){if(done)return;done=true;cleanup();resolve()}
+   function fail(){if(done)return;done=true;cleanup();reject(new Error('first-frame-timeout'))}
+   function check(){
+     if(done)return;
+     if(document.hidden){raf=requestAnimationFrame(check);return}
+     if(performance.now()-start>=timeout){fail();return}
+     if(video.readyState>=2 && video.currentTime<=.5 && !video.paused){ok();return}
+     raf=requestAnimationFrame(check)
+   }
+   if(video.requestVideoFrameCallback){
+     var callback=function(now,meta){
+       if(done)return;
+       if(document.hidden){frameId=video.requestVideoFrameCallback(callback);return}
+       if(video.readyState>=2 && meta.mediaTime<=.5){ok();return}
+       frameId=video.requestVideoFrameCallback(callback);
+     };
+     frameId=video.requestVideoFrameCallback(callback);
+   }
+   timer=setTimeout(fail,timeout);
+   video.addEventListener('playing',function(){requestAnimationFrame(function(){requestAnimationFrame(check)})},{once:true});
+   check();
+ });
+}
+function playAndShow(video,hold,requestToken){
+ return Promise.all([seekZero(video),new Promise(function(resolve){resolve()})]).then(function(){
+   if(requestToken!==token)throw new Error('stale');
+   var playPromise=video.play();
+   var framePromise=firstFrame(video,12000);
+   return Promise.all([playPromise,framePromise]);
+ }).then(function(){
+   if(requestToken!==token)throw new Error('stale');
+   setActive(video);
+   return holdTerminal(video,hold,requestToken);
+ });
+}
+function holdTerminal(video,hold,requestToken){
+ return new Promise(function(resolve,reject){
+   var duration=video.duration||0;
+   var target=Math.max(0,duration-hold),raf,timer,done=false;
+   function cleanup(){cancelAnimationFrame(raf);clearTimeout(timer)}
+   function finish(){
+     if(done)return;done=true;cleanup();
+     try{video.currentTime=Math.max(0,(video.duration||duration)-hold)}catch(e){}
+     video.pause();resolve()
+   }
+   function check(){
+     if(requestToken!==token){cleanup();reject(new Error('stale'));return}
+     if(document.hidden){raf=requestAnimationFrame(check);return}
+     if((video.currentTime||0)>=target)finish();
+     else raf=requestAnimationFrame(check);
+   }
+   timer=setTimeout(finish,Math.max(1000,(duration+1)*1000));
+   check();
+ });
+}
+function hideTitle(){
+ setTimeout(function(){if(locked)stage.classList.add('title-hidden')},Math.min((durations[lastSelected]||2.08)*.12,900));
+}
+function forward(which){
+ if(locked||state!=='base')return;
+ locked=true;clearError();lastSelected=which;lastFocused=document.activeElement;
+ setButtonsDisabled(true);controller.classList.add('collapsing');controller.classList.remove('selected','reopening');
+ stage.classList.remove('title-hidden');hideTitle();
+ token++;var t=token;
+ announce('Loading '+which+' transition…');
+ var video=clips[pairs[which][0]];
+ playAndShow(video,holds.forward,t).then(function(){
+   if(t!==token)return;
+   state=which;controller.classList.remove('collapsing');controller.classList.add('selected','collapsed');
+   resetLabel.tabIndex=0;resetLabel.setAttribute('aria-hidden','false');
+   announce(which+' selected. Reset is available.');
+   locked=false;
+   resetLabel.focus({preventScroll:true});
+ }).catch(function(e){
+   if(t!==token)return;
+   controller.classList.remove('collapsing','selected','collapsed');
+   stage.classList.remove('title-hidden');
+   showError('The transition could not be completed. Your current scene was preserved.');
+ });
+}
+function reverse(){
+ if(locked||state==='base')return;
+ locked=true;clearError();var previous=state;token++;var t=token;
+ var reverseKey=pairs[previous][1];
+ var video=clips[reverseKey];
+ setButtonsDisabled(true);resetLabel.tabIndex=-1;resetLabel.setAttribute('aria-hidden','true');
+ controller.classList.remove('selected','collapsed','collapsing');controller.classList.add('reopening');
+ announce('Returning to base…');
+ /* Start reverse playback in parallel with bar expansion. */
+ playAndShow(video,reverseKey==='sceneReverse'?holds.sceneReverse:holds.reverse,t).then(function(){
+   if(t!==token)return;
+   setActive(clips.base);
+   clips.base.pause();clips.base.currentTime=0;
+   state='base';controller.classList.remove('reopening');
+   setControllerIndex(0);
+   stage.classList.remove('title-hidden');
+   setButtonsDisabled(false);locked=false;
+   announce('Base scene restored.');
+   if(lastFocused&&document.body.contains(lastFocused))lastFocused.focus({preventScroll:true});
+ }).catch(function(){
+   if(t!==token)return;
+   controller.classList.remove('reopening');
+   showError('Reset could not be completed. Your current scene was preserved.');
+ });
+}
+buttons.forEach(function(b){b.addEventListener('click',function(){forward(b.getAttribute('data-state'))})});
+resetLabel.addEventListener('click',reverse);
+resetLabel.addEventListener('keydown',function(e){
+ if(e.key==='Enter'||e.key===' '){e.preventDefault();reverse()}
+});
+retry.addEventListener('click',function(){
+ clearError();
+ if(state==='base'&&lastSelected)forward(lastSelected);
+ else if(state!=='base')reverse();
+});
+document.addEventListener('visibilitychange',function(){
+ var active=clips[state]||clips.base;
+ if(document.hidden){
+   if(locked)active.pause();
+ }else{
+   if(locked&&state!=='base'&&active.currentTime<.5)active.play().catch(function(){});
+ }
+});
+Object.keys(clips).forEach(function(k){
+ var v=clips[k];
+ ready[k]=v.readyState>=2;
+ v.addEventListener('loadeddata',function(){ready[k]=true});
+});
+function waitForBase(){
+ var base=clips.base;
+ if(base.readyState>=2){base.pause();base.currentTime=0;setActive(base);announce('Ready.');return}
+ base.addEventListener('loadeddata',function(){
+   base.pause();base.currentTime=0;setActive(base);announce('Ready.');
+ },{once:true});
+}
+waitForBase();
+})();
+</script>
+</body>
+</html>
