@@ -58,7 +58,7 @@ header{
 .controller{
  position:absolute;top:46.78%;left:50%;transform:translateX(-50%);
  width:min(880px,calc(100vw - 48px));height:72px;z-index:20;
- --cap-left:-5px;--cap-width:calc(20% + 5px)
+ --cap-left:-5px;--cap-width:calc(16.6667% + 5px)
 }
 .track,.capsule{position:absolute;border-radius:999px;overflow:hidden}
 .track{
@@ -93,7 +93,7 @@ header{
  -webkit-mask-composite:xor;mask-composite:exclude;opacity:.27
 }
 .capsule:after{opacity:.30}
-.cells{position:absolute;inset:0;display:grid;grid-template-columns:repeat(5,1fr);align-items:center;z-index:3}
+.cells{position:absolute;inset:0;display:grid;grid-template-columns:repeat(6,1fr);align-items:center;z-index:3}
 .cell{
  display:flex;align-items:center;justify-content:center;height:100%;padding:0 14px;
  font-size:23px;font-weight:400;line-height:1.2;letter-spacing:-.04em;white-space:nowrap;
@@ -141,6 +141,7 @@ header{
  .cell{font-size:clamp(17px,2.5vw,24px)}
 }
 @media(max-width:700px){
+ .sam-credit{top:12%;font-size:clamp(27px,8vw,48px)} .showcase-card{min-height:72vh;padding:30px;border-radius:24px}.showcase-grid{width:60%;height:38%;right:4%;top:8%}.showcase-title{font-size:clamp(48px,14vw,76px)} .showcase-copy{font-size:13px}.showcase-slide{padding:18px}
  header{padding-left:18px;padding-right:18px}
  .logo{height:21px}.meta{font-size:12px}.meta span:last-child{display:none}
  .try{width:92px;height:34px;font-size:13px;position:relative}
@@ -151,12 +152,12 @@ header{
  }
  .hero h1 span{display:inline}
  .hero p{top:77%;width:calc(100vw - 44px);font-size:14px;text-align:center}
- .controller{top:53%;width:calc(100vw - 40px);height:156px}
- .track{top:0;height:156px;border-radius:28px}
- .cells{grid-template-columns:1fr 1fr;grid-template-rows:48px 54px 54px}
+ .controller{top:53%;width:calc(100vw - 40px);height:208px}
+ .track{top:0;height:208px;border-radius:28px}
+ .cells{grid-template-columns:1fr 1fr 1fr;grid-template-rows:44px 54px 54px}
  .cell{font-size:17px;padding:0 8px}
  .cell.label{grid-column:1/-1}
- .cell.action:nth-child(3),.cell.action:nth-child(5){border-left:1px solid rgb(255 255 255/.12)}
+ .cell.action:nth-child(3),.cell.action:nth-child(5),.cell.action:nth-child(7){border-left:1px solid rgb(255 255 255/.12)}
  .cell.action:nth-child(4),.cell.action:nth-child(5){border-top:1px solid rgb(255 255 255/.12)}
  .capsule{opacity:0;pointer-events:none;top:4vh;top:4dvh;left:50%;width:196px;height:64px;transform:translate(-50%,-50%);background:rgb(246 251 255/.18)}
  .controller.selected .capsule,.controller.collapsing .capsule{opacity:1;left:50%;width:196px;transform:translate(-50%,-50%)}
@@ -176,7 +177,7 @@ header{
 }
 @media(max-width:700px) and (max-height:520px) and (orientation:landscape){
  .hero h1{top:12%;font-size:clamp(28px,7vh,44px)}
- .controller{top:46%;height:118px}.track{height:118px}
+ .controller{top:46%;height:150px}.track{height:150px}
  .cells{grid-template-rows:36px 41px 41px}.cell{font-size:15px}
  .hero p{bottom:6px;top:auto;font-size:12px}
 }
@@ -184,6 +185,60 @@ header{
  .capsule,.track,.cell,.hero h1 span,.try,.reset-label{transition-duration:1ms!important;transition-delay:0!important}
  .hero h1 span{filter:none!important}
 }
+
+/* --- SAM motion / showcase upgrades --- */
+.media{
+  opacity:0;
+  visibility:hidden;
+  transform:translate3d(0,0,0) scale(1.001);
+  will-change:opacity,transform;
+  backface-visibility:hidden;
+  -webkit-backface-visibility:hidden;
+  transition:opacity 420ms cubic-bezier(.22,1,.36,1);
+}
+.media.active{opacity:1;visibility:visible}
+.media.playing{opacity:1}
+.stage.showcase .media{opacity:.16}
+.stage.showcase .showcase-slide{opacity:1;visibility:visible;transform:translate3d(0,0,0) scale(1)}
+.showcase-slide{
+  position:absolute;inset:0;z-index:6;display:flex;align-items:center;justify-content:center;
+  padding:9vw;opacity:0;visibility:hidden;transform:translate3d(0,26px,0) scale(.985);
+  transition:opacity 650ms var(--retake-ease),transform 800ms var(--retake-ease),visibility 0s linear 650ms;
+  pointer-events:none;
+}
+.showcase-card{
+  width:min(1120px,92vw);min-height:min(62vh,650px);position:relative;overflow:hidden;
+  border:1px solid rgb(255 255 255/.18);border-radius:32px;
+  background:linear-gradient(135deg,rgb(255 255 255/.13),rgb(255 255 255/.035));
+  -webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);
+  box-shadow:0 30px 100px rgb(0 0 0/.38),inset 0 1px 0 rgb(255 255 255/.2);
+  padding:clamp(30px,6vw,78px);display:flex;flex-direction:column;justify-content:flex-end;
+}
+.showcase-card:before{
+  content:"";position:absolute;inset:-30%;background:
+  radial-gradient(circle at 75% 25%,rgb(127 227 255/.25),transparent 25%),
+  radial-gradient(circle at 25% 70%,rgb(255 130 220/.18),transparent 27%);
+  filter:blur(8px);pointer-events:none;
+}
+.showcase-kicker{font-size:13px;letter-spacing:.16em;text-transform:uppercase;opacity:.65;margin-bottom:16px}
+.showcase-title{font-size:clamp(54px,9vw,132px);line-height:.82;letter-spacing:-.07em;font-weight:600;position:relative}
+.showcase-copy{max-width:620px;margin-top:26px;font-size:clamp(14px,1.4vw,19px);line-height:1.45;opacity:.72;position:relative}
+.showcase-grid{position:absolute;right:7%;top:10%;width:42%;height:60%;display:grid;grid-template-columns:1fr 1fr;gap:12px;transform:rotate(-5deg)}
+.showcase-tile{border:1px solid rgb(255 255 255/.2);border-radius:18px;background:linear-gradient(145deg,rgb(255 255 255/.22),rgb(255 255 255/.04));box-shadow:0 20px 50px rgb(0 0 0/.3);overflow:hidden}
+.showcase-tile:nth-child(1){transform:translateY(25px)} .showcase-tile:nth-child(2){transform:translateY(-15px)}
+.showcase-tile:nth-child(3){transform:translateY(10px)} .showcase-tile:nth-child(4){transform:translateY(-25px)}
+.editing .showcase-tile:after{content:"TIMELINE";display:grid;place-items:end start;height:100%;padding:14px;font-size:11px;letter-spacing:.12em;opacity:.6;background:repeating-linear-gradient(90deg,transparent 0 34px,rgb(255 255 255/.08) 35px 36px)}
+.vfx .showcase-tile:after{content:"VFX / COMPOSITE";display:grid;place-items:center;height:100%;font-size:11px;letter-spacing:.12em;opacity:.6;background:radial-gradient(circle,rgb(255 255 255/.16),transparent 45%)}
+.sam-credit{
+  position:absolute;left:50%;top:18%;transform:translateX(-50%);
+  z-index:25;white-space:nowrap;text-align:center;pointer-events:none;
+  font-size:clamp(34px,5.8vw,86px);font-weight:600;letter-spacing:-.065em;
+  opacity:.92;text-shadow:0 8px 40px rgb(0 0 0/.35);
+}
+.sam-credit span{display:block;font-size:.19em;letter-spacing:.28em;text-transform:uppercase;opacity:.62;margin-top:12px}
+.stage.showcase .hero,.stage.showcase .controller{opacity:0;pointer-events:none}
+.hero,.controller{transition:opacity 450ms var(--retake-ease)}
+
 </style>
 </head>
 <body>
@@ -200,8 +255,8 @@ header{
 <video id="v-color-rev" class="media" src="https://pub-86dc5b5484314368ac5436a674b0d919.r2.dev/designs/video-4-reverse.mp4" muted playsinline preload="auto" aria-hidden="true"></video>
 
 <div class="hero">
-  <h1 aria-label="The world model"><span>The</span><span>world</span><span>model</span></h1>
-  <p>LTX builds open world models that give you full control, from production-grade video to systems that understand and operate in the physical world.</p>
+  <h1 aria-label="Designed by Sam"><span>Creative</span><span>Visuals</span><span>by Sam</span></h1>
+  <p>Editing, motion design and VFX crafted frame-by-frame with a cinematic visual language.</p>
 </div>
 
 <div class="controller" id="controller" role="group" aria-label="Scene state controller">
@@ -216,6 +271,36 @@ header{
     <button class="cell action" data-state="fullLook">Cast</button>
   </div>
 </div>
+
+
+<div class="sam-credit" aria-label="Designed by Sam">
+  DESIGNED BY SAM
+  <span>Creative Editing · Motion · VFX</span>
+</div>
+
+<section class="showcase-slide editing" id="editingSlide" aria-hidden="true">
+  <div class="showcase-card">
+    <div class="showcase-grid">
+      <div class="showcase-tile"></div><div class="showcase-tile"></div>
+      <div class="showcase-tile"></div><div class="showcase-tile"></div>
+    </div>
+    <div class="showcase-kicker">Slide 05 · Editing</div>
+    <div class="showcase-title">CUT.<br>CRAFT.<br>FLOW.</div>
+    <p class="showcase-copy">Cinematic edits built with rhythm, pacing, transitions, typography and sound — designed to make every frame feel intentional.</p>
+  </div>
+</section>
+
+<section class="showcase-slide vfx" id="vfxSlide" aria-hidden="true">
+  <div class="showcase-card">
+    <div class="showcase-grid">
+      <div class="showcase-tile"></div><div class="showcase-tile"></div>
+      <div class="showcase-tile"></div><div class="showcase-tile"></div>
+    </div>
+    <div class="showcase-kicker">Slide 06 · VFX</div>
+    <div class="showcase-title">BUILD.<br>BLEND.<br>IMPACT.</div>
+    <p class="showcase-copy">VFX concepts, compositing, motion graphics and visual effects — combining design and storytelling into one polished visual.</p>
+  </div>
+</section>
 
 <header>
   <div class="brand">
@@ -252,6 +337,8 @@ var noticeText=document.getElementById('noticeText');
 var retry=document.getElementById('retry');
 var live=document.getElementById('live');
 var buttons=[].slice.call(document.querySelectorAll('.cell.action'));
+var editingSlide=document.getElementById('editingSlide');
+var vfxSlide=document.getElementById('vfxSlide');
 
 var clips={
  base:document.getElementById('v-base'),
@@ -272,25 +359,31 @@ var pairs={
 var durations={scene:2.08,light:2.08,colorway:3.00,fullLook:3.00};
 var reverseDurations={scene:2.08,light:2.04,colorway:2.48,fullLook:2.48};
 var holds={forward:.08,reverse:.08,sceneReverse:.18};
-var state='base',locked=false,token=0,lastSelected=null,lastFocused=null;
+var state='base',locked=false,token=0,lastSelected=null,lastFocused=null,activeVideo=null;
 var ready={};
 
 function announce(s){status.textContent=s;live.textContent=s}
 function setActive(v){
- Object.keys(clips).forEach(function(k){clips[k].classList.remove('active');clips[k].pause()});
- v.classList.add('active');
+  Object.keys(clips).forEach(function(k){
+    var clip=clips[k];
+    if(clip!==v){clip.classList.remove('active','playing'); clip.pause();}
+  });
+  if(v){
+    v.classList.add('active','playing');
+    activeVideo=v;
+  }
 }
 function setButtonsDisabled(disabled){
  buttons.forEach(function(b){b.disabled=disabled});
 }
 function setControllerIndex(index){
- if(index===0){
-   controller.style.setProperty('--cap-left','-5px');
-   controller.style.setProperty('--cap-width','calc(20% + 5px)');
- }else{
-   controller.style.setProperty('--cap-left',(index*20)+'%');
-   controller.style.setProperty('--cap-width',index===4?'calc(20% + 5px)':'20%');
- }
+  if(index===0){
+    controller.style.setProperty('--cap-left','-5px');
+    controller.style.setProperty('--cap-width','calc(16.6667% + 5px)');
+  }else{
+    controller.style.setProperty('--cap-left',((index-1)*16.6667)+'%');
+    controller.style.setProperty('--cap-width',index===6?'calc(16.6667% + 5px)':'16.6667%');
+  }
 }
 function hoverCapsule(button){
  if(locked||window.innerWidth<=700)return;
@@ -365,16 +458,19 @@ function firstFrame(video,timeout){
  });
 }
 function playAndShow(video,hold,requestToken){
- return Promise.all([seekZero(video),new Promise(function(resolve){resolve()})]).then(function(){
-   if(requestToken!==token)throw new Error('stale');
-   var playPromise=video.play();
-   var framePromise=firstFrame(video,12000);
-   return Promise.all([playPromise,framePromise]);
- }).then(function(){
-   if(requestToken!==token)throw new Error('stale');
-   setActive(video);
-   return holdTerminal(video,hold,requestToken);
- });
+  return seekZero(video).then(function(){
+    if(requestToken!==token)throw new Error('stale');
+    video.muted=true;
+    video.playsInline=true;
+    video.classList.add('active','playing');
+    var playPromise=video.play();
+    if(playPromise&&playPromise.catch)playPromise.catch(function(){});
+    return firstFrame(video,12000);
+  }).then(function(){
+    if(requestToken!==token)throw new Error('stale');
+    setActive(video);
+    return holdTerminal(video,hold,requestToken);
+  });
 }
 function holdTerminal(video,hold,requestToken){
  return new Promise(function(resolve,reject){
@@ -399,6 +495,35 @@ function holdTerminal(video,hold,requestToken){
 function hideTitle(){
  setTimeout(function(){if(locked)stage.classList.add('title-hidden')},Math.min((durations[lastSelected]||2.08)*.12,900));
 }
+function showShowcase(which){
+  if(locked)return;
+  locked=true; clearError(); lastSelected=which; lastFocused=document.activeElement; token++;
+  setButtonsDisabled(true);
+  controller.classList.add('collapsing');
+  stage.classList.add('showcase');
+  editingSlide.setAttribute('aria-hidden',which!=='editing');
+  vfxSlide.setAttribute('aria-hidden',which!=='vfx');
+  editingSlide.style.opacity=which==='editing'?'1':'0';
+  vfxSlide.style.opacity=which==='vfx'?'1':'0';
+  editingSlide.style.visibility=which==='editing'?'visible':'hidden';
+  vfxSlide.style.visibility=which==='vfx'?'visible':'hidden';
+  state=which;
+  resetLabel.tabIndex=0; resetLabel.setAttribute('aria-hidden','false');
+  controller.classList.remove('collapsing'); controller.classList.add('selected');
+  stage.classList.remove('title-hidden');
+  announce(which==='editing'?'Editing showcase selected.':'VFX showcase selected.');
+  locked=false;
+  resetLabel.focus({preventScroll:true});
+}
+function hideShowcase(){
+  editingSlide.style.opacity='0'; vfxSlide.style.opacity='0';
+  editingSlide.style.visibility='hidden'; vfxSlide.style.visibility='hidden';
+  editingSlide.setAttribute('aria-hidden','true'); vfxSlide.setAttribute('aria-hidden','true');
+  stage.classList.remove('showcase');
+  controller.classList.remove('selected','collapsed','reopening','collapsing');
+  setControllerIndex(0);
+}
+
 function forward(which){
  if(locked||state!=='base')return;
  locked=true;clearError();lastSelected=which;lastFocused=document.activeElement;
@@ -446,7 +571,7 @@ function reverse(){
    showError('Reset could not be completed. Your current scene was preserved.');
  });
 }
-buttons.forEach(function(b){b.addEventListener('click',function(){forward(b.getAttribute('data-state'))})});
+buttons.forEach(function(b){b.addEventListener('click',function(){var st=b.getAttribute('data-state'); if(st==='editing'||st==='vfx')showShowcase(st); else forward(st)})});
 resetLabel.addEventListener('click',reverse);
 resetLabel.addEventListener('keydown',function(e){
  if(e.key==='Enter'||e.key===' '){e.preventDefault();reverse()}
